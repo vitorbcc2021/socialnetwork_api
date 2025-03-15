@@ -30,6 +30,7 @@ This is my RESTFul API developed in Java Spring Boot following some architectura
 | Method | Endpoint       | Description          |
 |--------|----------------|----------------------|
 | POST   | `/user/`       | Create user          |
+| POST   | `/user/login`  | Authenticate user    |
 | GET    | `/user/{id}`   | Get user by ID       |
 | GET    | `/user/`       | List all users       |
 | PUT    | `/user/{id}`   | Update user          |
@@ -55,17 +56,99 @@ This is my RESTFul API developed in Java Spring Boot following some architectura
 {
   "name": "John Doe",
   "email": "john@example.com",
+  "password": "securepassword",
   "profilePicture": "url/to/image.jpg"
 }
 ```
 
 #### Response (201 Created)
-``` json
+```json
 {
   "userID": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "profilePicture": "url/to/image.jpg",
   "_links": {
     "User List": {
       "href": "http://localhost:8080/user/"
+    }
+  }
+}
+```
+
+### Authenticate User (POST `/user/login`)
+**Request**:
+```json
+{
+  "email": "john@example.com",
+  "password": "securepassword"
+}
+```
+
+#### Response (200 OK)
+```json
+{
+  "userID": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/user/a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+    }
+  }
+}
+```
+
+### Get User by ID (GET `/user/{id}`)
+**Response (200 OK)**
+```json
+{
+  "userID": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "_links": {
+    "User List": {
+      "href": "http://localhost:8080/user/"
+    }
+  }
+}
+```
+
+### Create Post (POST `/post/`)
+**Request**:
+```json
+{
+  "title": "My First Post",
+  "content": "This is the content of my first post.",
+  "userID": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+}
+```
+
+#### Response (201 Created)
+```json
+{
+  "postID": "d6f8c8a0-8b7d-11ed-a1eb-0242ac120002",
+  "title": "My First Post",
+  "content": "This is the content of my first post.",
+  "userID": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
+  "_links": {
+    "Post List": {
+      "href": "http://localhost:8080/post/"
+    }
+  }
+}
+```
+
+### Get Post by ID (GET `/post/{id}`)
+**Response (200 OK)**
+```json
+{
+  "postID": "d6f8c8a0-8b7d-11ed-a1eb-0242ac120002",
+  "title": "My First Post",
+  "content": "This is the content of my first post.",
+  "_links": {
+    "Post List": {
+      "href": "http://localhost:8080/post/"
     }
   }
 }
@@ -98,3 +181,4 @@ spring.jpa.hibernate.ddl-auto=update
 ## Richardson Maturity Level: 3 (Hypermedia-driven API)
 Indicates the use of HATEOAS (Hypermedia as the Engine of Application State), where API responses include navigable hyperlinks.  
 This allows clients to discover and interact with resources dynamically, without relying on prior knowledge of the endpoints. The API becomes self-describing and evolvable, following the most rigorous RESTful principles.
+

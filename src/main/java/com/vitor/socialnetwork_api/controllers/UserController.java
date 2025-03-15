@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vitor.socialnetwork_api.dtos.LoginDto;
 import com.vitor.socialnetwork_api.dtos.UserDto;
 import com.vitor.socialnetwork_api.models.UserModel;
 import com.vitor.socialnetwork_api.repositories.UserRepository;
@@ -40,6 +41,21 @@ public class UserController {
         BeanUtils.copyProperties(dto, user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userRepository.save(user));
+    }
+
+
+    @PostMapping("/user/login")
+    public ResponseEntity<Object> getByLogin(@RequestBody @Valid LoginDto loginDto) {
+        Optional<UserModel> userOptional = userRepository.findByEmailAndPassword(loginDto.email(), loginDto.password());
+
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid credentials");
+        }
+
+        UserModel user = userOptional.get();
+        user.add(linkTo(methodOn(UserController.class).getUser(user.getUserID())).withSelfRel());
+
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
 
