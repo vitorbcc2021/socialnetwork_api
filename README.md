@@ -88,7 +88,7 @@ All resources include navigable links. Example:
 ```
 
 ## Database Configuration (application.properties)
-```json
+```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/socialnetwork
 spring.datasource.username=postgres
 spring.datasource.password=admin
