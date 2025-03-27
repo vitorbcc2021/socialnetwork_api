@@ -20,7 +20,7 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID userID;
+    private UUID id;
 
     private String name;
     private String email;
@@ -36,12 +36,12 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
         return serialVersionUID;
     }
 
-    public UUID getUserID() {
-        return userID;
+    public UUID getId() {
+        return id;
     }
 
-    public void setUserID(UUID userID) {
-        this.userID = userID;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getName() {

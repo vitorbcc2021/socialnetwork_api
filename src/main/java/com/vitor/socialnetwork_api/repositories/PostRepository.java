@@ -10,5 +10,5 @@ import com.vitor.socialnetwork_api.models.PostModel;
 
 @Repository
 public interface PostRepository extends JpaRepository<PostModel, UUID> {
-    List<PostModel> findByAuthorId(UUID userId);
+    List<PostModel> findByAuthor_Id(UUID authorId);
 }

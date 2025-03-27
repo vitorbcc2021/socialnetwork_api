@@ -43,7 +43,7 @@ public class PostController {
     @PostMapping("/")
     public ResponseEntity<?> addPost(@RequestBody @Valid PostDto dto) {
         try {
-            UUID authorId = UUID.fromString(dto.authorId());
+            UUID authorId = UUID.fromString(dto.author());
             
             UserModel author = userRepository.findById(authorId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -81,7 +81,7 @@ public class PostController {
     public ResponseEntity<?> getPostsByUser(@PathVariable String userId) {
         try {
             UUID userUuid = UUID.fromString(userId); // Converte String para UUID
-            List<PostModel> posts = postRepository.findByAuthorId(userUuid);
+            List<PostModel> posts = postRepository.findByAuthor_Id(userUuid);
             
             if (posts.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum post encontrado para este usuário");
@@ -101,7 +101,7 @@ public class PostController {
 
         if(!posts.isEmpty())
             for(PostModel post : posts)
-                post.add(linkTo(methodOn(PostController.class).getPost(post.getPostID())).withSelfRel());
+                post.add(linkTo(methodOn(PostController.class).getPost(post.getId())).withSelfRel());
 
         return ResponseEntity.status(HttpStatus.OK).body(posts);
     }

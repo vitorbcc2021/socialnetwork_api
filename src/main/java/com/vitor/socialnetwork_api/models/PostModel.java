@@ -25,10 +25,10 @@ public class PostModel extends RepresentationModel<PostModel> implements Seriali
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID postID;
+    private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "author_id")
     private UserModel author; // Apenas referência via FK
 
     private String imgPath; 
@@ -40,12 +40,12 @@ public class PostModel extends RepresentationModel<PostModel> implements Seriali
         return serialVersionUID;
     }
 
-    public UUID getPostID() {
-        return postID;
+    public UUID getId() {
+        return id;
     }
 
-    public void setPostID(UUID postID) {
-        this.postID = postID;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public UserModel getAuthor() {

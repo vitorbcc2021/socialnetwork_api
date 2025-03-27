@@ -62,7 +62,7 @@ public class UserController {
         }
 
         UserModel user = userOptional.get();
-        user.add(linkTo(methodOn(UserController.class).getUser(user.getUserID())).withSelfRel());
+        user.add(linkTo(methodOn(UserController.class).getUser(user.getId())).withSelfRel());
 
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
@@ -88,7 +88,7 @@ public class UserController {
 
         if(!users.isEmpty())
             for(UserModel user : users)
-                user.add(linkTo(methodOn(UserController.class).getUser(user.getUserID())).withSelfRel());
+                user.add(linkTo(methodOn(UserController.class).getUser(user.getId())).withSelfRel());
 
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
