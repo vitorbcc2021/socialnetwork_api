@@ -8,12 +8,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vitor.socialnetwork_api.dtos.LoginDto;
@@ -27,6 +29,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
     
 
@@ -34,22 +37,28 @@ public class UserController {
     UserRepository userRepository;
 
 
-    @PostMapping("/user/")
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
+    @PostMapping("/")
     public ResponseEntity<UserModel> addUser(@RequestBody @Valid UserDto dto){
         UserModel user = new UserModel();
 
         BeanUtils.copyProperties(dto, user);
 
+        user.setPassword(passwordEncoder.encode(dto.password()));
+
         return ResponseEntity.status(HttpStatus.CREATED).body(userRepository.save(user));
     }
 
 
-    @PostMapping("/user/login")
+    @PostMapping("/login")
     public ResponseEntity<Object> getByLogin(@RequestBody @Valid LoginDto loginDto) {
-        Optional<UserModel> userOptional = userRepository.findByEmailAndPassword(loginDto.email(), loginDto.password());
+        Optional<UserModel> userOptional = userRepository.findByEmail(loginDto.email());
 
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid credentials");
+        if (userOptional.isEmpty() || !passwordEncoder.matches(loginDto.password(), userOptional.get().getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
 
         UserModel user = userOptional.get();
@@ -59,7 +68,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Object> getUser (@PathVariable("id") UUID id){
         Optional<UserModel> userOptional = userRepository.findById(id);
 
@@ -73,7 +82,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/user/")
+    @GetMapping("/")
     public ResponseEntity<Object> getAllUsers (){
         List<UserModel> users = userRepository.findAll();
 
@@ -85,7 +94,7 @@ public class UserController {
     }
 
 
-    @PutMapping("/user/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Object> updateUser(@PathVariable("id") UUID id, @RequestBody @Valid UserDto dto) {
         Optional<UserModel> userOptional = userRepository.findById(id);
 
@@ -98,7 +107,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userRepository.save(user));
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteUser(@PathVariable("id") UUID id){
         Optional<UserModel> userOptional = userRepository.findById(id);
 

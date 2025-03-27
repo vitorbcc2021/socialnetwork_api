@@ -1,10 +1,9 @@
 package com.vitor.socialnetwork_api.dtos;
 
-import com.vitor.socialnetwork_api.models.UserModel;
+import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
-public record PostDto(@NotNull UserModel userModel, @NotBlank String imgPath, @NotNull int likes) {
+public record PostDto(@NotBlank String authorId, @NotBlank String imgPath, List<String> likes) {
     
 }

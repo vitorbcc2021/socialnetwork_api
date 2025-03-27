@@ -1,15 +1,20 @@
 package com.vitor.socialnetwork_api.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.hateoas.RepresentationModel;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,9 +27,14 @@ public class PostModel extends RepresentationModel<PostModel> implements Seriali
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID postID;
 
-    private UserModel userModel;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserModel author; // Apenas referência via FK
+
     private String imgPath; 
-    private int likes;
+    
+    @ElementCollection
+    private List<String> likes = new ArrayList<>();
 
     public static long getSerialversionuid() {
         return serialVersionUID;
@@ -38,12 +48,12 @@ public class PostModel extends RepresentationModel<PostModel> implements Seriali
         this.postID = postID;
     }
 
-    public UserModel getUserModel() {
-        return userModel;
+    public UserModel getAuthor() {
+        return author;
     }
 
-    public void setUserModel(UserModel userModel) {
-        this.userModel = userModel;
+    public void setAuthor(UserModel userModel) {
+        this.author = userModel;
     }
 
     public String getImgPath() {
@@ -54,11 +64,12 @@ public class PostModel extends RepresentationModel<PostModel> implements Seriali
         this.imgPath = imgPath;
     }
 
-    public int getLikes() {
+    public List<String> getLikes() {
         return likes;
     }
-    
-    public void setLikes(int likes) {
+
+    public void setLikes(List<String> likes) {
         this.likes = likes;
     }
+
 }

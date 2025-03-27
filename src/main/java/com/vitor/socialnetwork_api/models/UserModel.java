@@ -13,7 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class UserModel extends RepresentationModel<UserModel> implements Serializable{
     private static final long serialVersionUID = 1L;
     
@@ -24,6 +24,10 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
 
     private String name;
     private String email;
+
+    @Column(nullable = false)
+    private String password;
+
     private String profilePicture;
     private String banner;
     private int followers;
@@ -55,6 +59,14 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
     public void setEmail(String email) {
         this.email = email;
     }
+    
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getProfilePicture() {
         return profilePicture;
@@ -79,5 +91,6 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
     public void setFollowers(int followers) {
         this.followers = followers;
     }
+
 
 }

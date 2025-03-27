@@ -10,5 +10,5 @@ import com.vitor.socialnetwork_api.models.UserModel;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserModel, UUID> {
-    Optional<UserModel> findByEmailAndPassword(String email, String password);
+    Optional<UserModel> findByEmail(String email); 
 }
