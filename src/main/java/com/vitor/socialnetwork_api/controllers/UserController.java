@@ -102,7 +102,14 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
         
         UserModel user = userOptional.get();
-        BeanUtils.copyProperties(dto, user);
+        
+        if(dto.password() == null || dto.password().isEmpty()) {
+            String currentPassword = user.getPassword(); // Salva a senha atual
+            BeanUtils.copyProperties(dto, user);
+            user.setPassword(currentPassword); // Restaura a senha original
+        } else {
+            BeanUtils.copyProperties(dto, user);
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(userRepository.save(user));
     }

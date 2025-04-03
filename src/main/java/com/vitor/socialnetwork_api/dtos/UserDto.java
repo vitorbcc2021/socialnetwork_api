@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 public record UserDto(
     @NotBlank String name,
     @NotBlank String email,
-    @NotBlank String password,
+    String password,
     String profilePicture,
     String banner, 
     @NotNull int followers

@@ -43,7 +43,7 @@ public class PostController {
     @PostMapping("/")
     public ResponseEntity<?> addPost(@RequestBody @Valid PostDto dto) {
         try {
-            UUID authorId = UUID.fromString(dto.author());
+            UUID authorId = UUID.fromString(dto.authorId());
             
             UserModel author = userRepository.findById(authorId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -53,7 +53,7 @@ public class PostController {
             post.setImgPath(dto.imgPath());
             post.setLikes(dto.likes());
             
-            return ResponseEntity.ok(postRepository.save(post));
+            return ResponseEntity.status(HttpStatus.CREATED).body(postRepository.save(post));
             
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("ID do usuário inválido");
