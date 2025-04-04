@@ -73,14 +73,14 @@ public class PostController {
 
         postOptional.get().add(linkTo(methodOn(PostController.class).getAllPosts()).withRel("Post List"));
 
-        return ResponseEntity.status(HttpStatus.OK).body(postOptional.get());
+        return ResponseEntity.ok(postOptional.get());
     }
 
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getPostsByUser(@PathVariable String userId) {
         try {
-            UUID userUuid = UUID.fromString(userId); // Converte String para UUID
+            UUID userUuid = UUID.fromString(userId);
             List<PostModel> posts = postRepository.findByAuthor_Id(userUuid);
             
             if (posts.isEmpty()) {
@@ -103,7 +103,7 @@ public class PostController {
             for(PostModel post : posts)
                 post.add(linkTo(methodOn(PostController.class).getPost(post.getId())).withSelfRel());
 
-        return ResponseEntity.status(HttpStatus.OK).body(posts);
+        return ResponseEntity.ok(posts);
     }
 
 
@@ -117,7 +117,7 @@ public class PostController {
         PostModel post = postOptional.get();
         BeanUtils.copyProperties(dto, post);
 
-        return ResponseEntity.status(HttpStatus.OK).body(postRepository.save(post));
+        return ResponseEntity.ok(postRepository.save(post));
     }
 
     @DeleteMapping("/{id}")
@@ -129,6 +129,6 @@ public class PostController {
 
         postRepository.delete(postOptional.get());
 
-        return ResponseEntity.status(HttpStatus.OK).body("Post deleted!");
+        return ResponseEntity.ok("Post deleted!");
     }
 }

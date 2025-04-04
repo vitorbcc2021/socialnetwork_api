@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vitor.socialnetwork_api.dtos.LoginDto;
-import com.vitor.socialnetwork_api.dtos.UserDto;
+import com.vitor.socialnetwork_api.dtos.UserCreationDto;
+import com.vitor.socialnetwork_api.dtos.UserUpdateDto;
 import com.vitor.socialnetwork_api.models.UserModel;
 import com.vitor.socialnetwork_api.repositories.UserRepository;
 
@@ -42,7 +43,7 @@ public class UserController {
 
 
     @PostMapping("/")
-    public ResponseEntity<UserModel> addUser(@RequestBody @Valid UserDto dto){
+    public ResponseEntity<UserModel> addUser(@RequestBody @Valid UserCreationDto dto){
         UserModel user = new UserModel();
 
         BeanUtils.copyProperties(dto, user);
@@ -64,7 +65,7 @@ public class UserController {
         UserModel user = userOptional.get();
         user.add(linkTo(methodOn(UserController.class).getUser(user.getId())).withSelfRel());
 
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+        return ResponseEntity.ok(user);
     }
 
 
@@ -78,7 +79,7 @@ public class UserController {
 
         userOptional.get().add(linkTo(methodOn(UserController.class).getAllUsers()).withRel("User List"));
 
-        return ResponseEntity.status(HttpStatus.OK).body(userOptional.get());
+        return ResponseEntity.ok(userOptional.get());
     }
 
 
@@ -90,28 +91,24 @@ public class UserController {
             for(UserModel user : users)
                 user.add(linkTo(methodOn(UserController.class).getUser(user.getId())).withSelfRel());
 
-        return ResponseEntity.status(HttpStatus.OK).body(users);
+        return ResponseEntity.ok(users);
     }
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable("id") UUID id, @RequestBody @Valid UserDto dto) {
+    public ResponseEntity<Object> updateUser(@PathVariable("id") UUID id, @RequestBody @Valid UserUpdateDto dto) {
+        
         Optional<UserModel> userOptional = userRepository.findById(id);
 
-        if(userOptional.isEmpty())
+        if(userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+        }
         
         UserModel user = userOptional.get();
         
-        if(dto.password() == null || dto.password().isEmpty()) {
-            String currentPassword = user.getPassword(); // Salva a senha atual
-            BeanUtils.copyProperties(dto, user);
-            user.setPassword(currentPassword); // Restaura a senha original
-        } else {
-            BeanUtils.copyProperties(dto, user);
-        }
+        BeanUtils.copyProperties(dto, user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(userRepository.save(user));
+        return ResponseEntity.ok(userRepository.save(user));
     }
 
     @DeleteMapping("/{id}")
@@ -124,6 +121,6 @@ public class UserController {
         String name = userOptional.get().getName();
         userRepository.delete(userOptional.get());
 
-        return ResponseEntity.status(HttpStatus.OK).body(name + " is now deleted!");
+        return ResponseEntity.ok(name + " is now deleted!");
     }
 }
