@@ -10,7 +10,10 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*")  // Permite TUDO (só em dev, não use em produção)
-                .allowedMethods("*");  // Permite todos os métodos (GET, POST, etc.)
+                .allowedOrigins("*") 
+                .allowedMethods("*"); 
+                /* Ive created this configuration to deploy all the application,
+                 * by some issues, i cannot deploy the spring application for free.
+                 */
     }
 }
