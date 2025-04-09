@@ -1,15 +1,22 @@
 package com.vitor.socialnetwork_api.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.hateoas.RepresentationModel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
@@ -26,11 +33,19 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
     private String email;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     private String profilePicture;
     private String banner;
-    private int followers;
+
+    @ElementCollection
+    @CollectionTable(
+        name = "user_followers",
+        joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Column(name = "follower_id") 
+    private List<UUID> followers = new ArrayList<>();
 
     public static long getSerialversionuid() {
         return serialVersionUID;
@@ -84,11 +99,11 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
         this.banner = banner;
     }
 
-    public int getFollowers() {
+    public List<UUID> getFollowers() {
         return followers;
     }
 
-    public void setFollowers(int followers) {
+    public void setFollowers(List<UUID> followers) {
         this.followers = followers;
     }
 

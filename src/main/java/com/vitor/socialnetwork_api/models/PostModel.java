@@ -29,7 +29,7 @@ public class PostModel extends RepresentationModel<PostModel> implements Seriali
 
     @ManyToOne
     @JoinColumn(name = "author_id")
-    private UserModel author; // Apenas referência via FK
+    private UserModel author;
 
     private String imgPath; 
     
