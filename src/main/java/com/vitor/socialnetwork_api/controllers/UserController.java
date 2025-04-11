@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vitor.socialnetwork_api.dtos.LoginDto;
@@ -123,4 +124,16 @@ public class UserController {
 
         return ResponseEntity.ok(name + " is now deleted!");
     }
+
+    @PostMapping("/{id}/follow")
+    public ResponseEntity<Object> followUser(@PathVariable("id") UUID id){
+        Optional<UserModel> userOptional = userRepository.findById(id); 
+
+        if(userOptional.isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+        
+        
+        return ResponseEntity.ok("aaaaaaaaaaa");
+    }
+    
 }

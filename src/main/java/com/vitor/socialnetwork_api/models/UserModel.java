@@ -1,6 +1,7 @@
 package com.vitor.socialnetwork_api.models;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,6 +31,8 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
     private UUID id;
 
     private String name;
+    
+    @Column(unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -46,6 +49,10 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
     )
     @Column(name = "follower_id") 
     private List<UUID> followers = new ArrayList<>();
+
+    @Column(nullable = false)
+    @JsonIgnore
+    private ZonedDateTime creationDateTime = ZonedDateTime.now();
 
     public static long getSerialversionuid() {
         return serialVersionUID;
@@ -107,5 +114,12 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
         this.followers = followers;
     }
 
+    public ZonedDateTime getCreationDateTime() {
+        return creationDateTime;
+    }
+
+    public void setCreationDateTime(ZonedDateTime creationDateTime) {
+        this.creationDateTime = creationDateTime;
+    }
 
 }

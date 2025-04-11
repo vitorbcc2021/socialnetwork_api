@@ -1,12 +1,16 @@
 package com.vitor.socialnetwork_api.models;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.hateoas.RepresentationModel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -34,7 +38,16 @@ public class PostModel extends RepresentationModel<PostModel> implements Seriali
     private String imgPath; 
     
     @ElementCollection
+    @CollectionTable(
+        name = "post_likes",
+        joinColumns = @JoinColumn(name = "post_id")
+    )
+    @Column(name = "user_id") 
     private List<String> likes = new ArrayList<>();
+
+    @Column(nullable = false)
+    @JsonIgnore
+    private ZonedDateTime creationDateTime = ZonedDateTime.now();
 
     public static long getSerialversionuid() {
         return serialVersionUID;
@@ -70,6 +83,14 @@ public class PostModel extends RepresentationModel<PostModel> implements Seriali
 
     public void setLikes(List<String> likes) {
         this.likes = likes;
+    }
+
+    public ZonedDateTime getCreationDateTime() {
+        return creationDateTime;
+    }
+
+    public void setCreationDateTime(ZonedDateTime creationDateTime) {
+        this.creationDateTime = creationDateTime;
     }
 
 }
