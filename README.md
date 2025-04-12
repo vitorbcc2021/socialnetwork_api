@@ -1,7 +1,11 @@
 # Social Network API Documentation
 This is my RESTFul API developed in Java Spring Boot following some architectural concepts of **Leonard Richardson**.
 
-## Technical Specifications
+## ⚠️ Important!
+  I can't find a way to host the API for free, so i have to keep the entire Social Network project running locally.  
+  It can change soon 😉
+
+## 🧑‍💻 Technical Specifications
 
 ### Dependencies
 - **Spring Boot**: 3.4.3
@@ -13,152 +17,115 @@ This is my RESTFul API developed in Java Spring Boot following some architectura
   - `spring-boot-starter-validation`
   - `postgresql`
   - `spring-boot-starter-test`
+  - `spring-boot-starter-security`
 
 ### Database
-- **Type**: PostgreSQL
-- **Name**: `socialnetwork`
+You will need PostgreSQL 17 or higher to run the application. Manually, create an database called: *socialnetwork*.  
+On the file **application.properties**, you will need to do some changes to work on your PostgreSQL:
 - **Credentials**:
-  - Username: `postgres`
-  - Password: `admin`
+  ```properties
+  spring.datasource.username=your_psql_user
+  spring.datasource.password=your_psql_password
+  ```
 
 ---
 
-## API Endpoints
+## 🖥️ API Endpoints
 
 ### User Routes
 
-| Method | Endpoint       | Description          |
-|--------|----------------|----------------------|
-| POST   | `/user/`       | Create user          |
-| POST   | `/user/login`  | Authenticate user    |
-| GET    | `/user/{id}`   | Get user by ID       |
-| GET    | `/user/`       | List all users       |
-| PUT    | `/user/{id}`   | Update user          |
-| DELETE | `/user/{id}`   | Delete user          |
-
-### Post Routes
-
-| Method | Endpoint       | Description          |
-|--------|----------------|----------------------|
-| POST   | `/post/`       | Create post          |
-| GET    | `/post/{id}`   | Get post by ID       |
-| GET    | `/post/`       | List all posts       |
-| PUT    | `/post/{id}`   | Update post          |
-| DELETE | `/post/{id}`   | Delete post          |
+| Method | Endpoint                     | Description              |
+|--------|------------------------------|--------------------------|
+| POST   | `/users/`                    | Create user              |
+| POST   | `/users/login`              | Authenticate user        |
+| GET    | `/users/{id}`               | Get user by ID           |
+| GET    | `/users/`                   | List all users           |
+| PUT    | `/users/{id}`               | Update user              |
+| DELETE | `/users/{id}`               | Delete user              |
+| POST   | `/users/{userId}/follow`    | Follow another user      |
+| POST   | `/users/{userId}/unfollow`  | Unfollow a user          |
 
 ---
 
-## Request/Response Examples
+## 🧪 Request/Response Examples
 
-### Create User (POST `/user/`)
+### ➕ Create User (`POST /users/`)
+
 **Request**:
 ```json
 {
   "name": "John Doe",
   "email": "john@example.com",
   "password": "securepassword",
-  "profilePicture": "url/to/image.jpg"
+  "profilePicture": "https://example.com/img.jpg",
+  "banner": "https://example.com/banner.jpg"
 }
 ```
 
 #### Response (201 Created)
 ```json
 {
-  "userID": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
+  "id": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
   "name": "John Doe",
   "email": "john@example.com",
-  "profilePicture": "url/to/image.jpg",
-  "_links": {
-    "User List": {
-      "href": "http://localhost:8080/user/"
-    }
-  }
-}
-```
-
-### Authenticate User (POST `/user/login`)
-**Request**:
-```json
-{
-  "email": "john@example.com",
-  "password": "securepassword"
-}
-```
-
-#### Response (200 OK)
-```json
-{
-  "userID": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
-  "name": "John Doe",
-  "email": "john@example.com",
+  "profilePicture": "https://example.com/img.jpg",
+  "banner": "https://example.com/banner.jpg",
   "_links": {
     "self": {
-      "href": "http://localhost:8080/user/a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+      "href": "http://localhost:8080/users/a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+    },
+    "all-users": {
+      "href": "http://localhost:8080/users"
     }
   }
 }
+
 ```
 
 ### Get User by ID (GET `/user/{id}`)
 **Response (200 OK)**
 ```json
 {
-  "userID": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
+  "id": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
   "name": "John Doe",
   "email": "john@example.com",
+  "profilePicture": "https://example.com/img.jpg",
+  "banner": "https://example.com/banner.jpg",
   "_links": {
-    "User List": {
-      "href": "http://localhost:8080/user/"
+    "self": {
+      "href": "http://localhost:8080/users/a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+    },
+    "all-users": {
+      "href": "http://localhost:8080/users"
     }
   }
 }
+
 ```
 
 ### Create Post (POST `/post/`)
 **Request**:
 ```json
 {
-  "title": "My First Post",
-  "content": "This is the content of my first post.",
-  "userID": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+  "authorId": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
+  "imgPath": "url/para/imagem.jpg",
+  "likes": []
 }
+
 ```
 
 #### Response (201 Created)
 ```json
 {
-  "postID": "d6f8c8a0-8b7d-11ed-a1eb-0242ac120002",
-  "title": "My First Post",
-  "content": "This is the content of my first post.",
-  "userID": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
-  "_links": {
-    "Post List": {
-      "href": "http://localhost:8080/post/"
-    }
-  }
-}
-```
-
-### Get Post by ID (GET `/post/{id}`)
-**Response (200 OK)**
-```json
-{
-  "postID": "d6f8c8a0-8b7d-11ed-a1eb-0242ac120002",
-  "title": "My First Post",
-  "content": "This is the content of my first post.",
-  "_links": {
-    "Post List": {
-      "href": "http://localhost:8080/post/"
-    }
-  }
-}
-```
-
-## HATEOAS Implementation
-All resources include navigable links. Example:
-```json
-{
-  "postID": "d6f8c8a0-8b7d-11ed-a1eb-0242ac120002",
+  "id": "d6f8c8a0-8b7d-11ed-a1eb-0242ac120002",
+  "author": {
+    "id": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "profilePicture": "url/para/imagem.jpg"
+  },
+  "imgPath": "url/para/imagem.jpg",
+  "likes": [],
   "_links": {
     "self": {
       "href": "http://localhost:8080/post/d6f8c8a0-8b7d-11ed-a1eb-0242ac120002"
@@ -168,17 +135,54 @@ All resources include navigable links. Example:
     }
   }
 }
+
 ```
 
-## Database Configuration (application.properties)
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/socialnetwork
-spring.datasource.username=postgres
-spring.datasource.password=admin
-spring.jpa.hibernate.ddl-auto=update
+### Get Post by ID (GET `/post/{id}`)
+**Response (200 OK)**
+```json
+{
+  "id": "d6f8c8a0-8b7d-11ed-a1eb-0242ac120002",
+  "author": {
+    "id": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "profilePicture": "url/para/imagem.jpg"
+  },
+  "imgPath": "url/para/imagem.jpg",
+  "likes": [],
+  "_links": {
+    "Post List": {
+      "href": "http://localhost:8080/post/"
+    }
+  }
+}
+
 ```
 
-## Richardson Maturity Level: 3 (Hypermedia-driven API)
-Indicates the use of HATEOAS (Hypermedia as the Engine of Application State), where API responses include navigable hyperlinks.  
-This allows clients to discover and interact with resources dynamically, without relying on prior knowledge of the endpoints. The API becomes self-describing and evolvable, following the most rigorous RESTful principles.
+## HATEOAS Implementation
+All resources include navigable links. Example:
+```json
+{
+  "id": "d6f8c8a0-8b7d-11ed-a1eb-0242ac120002",
+  "author": {
+    "id": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "profilePicture": "url/para/imagem.jpg"
+  },
+  "imgPath": "url/para/imagem.jpg",
+  "likes": [],
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/post/d6f8c8a0-8b7d-11ed-a1eb-0242ac120002"
+    },
+    "Post List": {
+      "href": "http://localhost:8080/post/"
+    }
+  }
+}
+
+```
+
 
