@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vitor.socialnetwork_api.dtos.FollowDto;
 import com.vitor.socialnetwork_api.dtos.LoginDto;
 import com.vitor.socialnetwork_api.dtos.UserCreationDto;
 import com.vitor.socialnetwork_api.dtos.UserUpdateDto;
@@ -44,7 +44,13 @@ public class UserController {
 
 
     @PostMapping("/")
-    public ResponseEntity<UserModel> addUser(@RequestBody @Valid UserCreationDto dto){
+    public ResponseEntity<Object> addUser(@RequestBody @Valid UserCreationDto dto){
+
+        if (userRepository.existsByEmail(dto.email())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("Este email já está em uso");
+        }
+
         UserModel user = new UserModel();
 
         BeanUtils.copyProperties(dto, user);
@@ -125,15 +131,43 @@ public class UserController {
         return ResponseEntity.ok(name + " is now deleted!");
     }
 
-    @PostMapping("/{id}/follow")
-    public ResponseEntity<Object> followUser(@PathVariable("id") UUID id){
-        Optional<UserModel> userOptional = userRepository.findById(id); 
+    @PostMapping("/{userId}/follow")
+    public ResponseEntity<Object> followUser(@PathVariable UUID userId, @RequestBody @Valid FollowDto followDto) {
+        try {
+            UserModel targetUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            
+            UserModel follower = userRepository.findById(followDto.followerId())
+                .orElseThrow(() -> new RuntimeException("Seguidor não encontrado"));
 
-        if(userOptional.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
-        
-        
-        return ResponseEntity.ok("aaaaaaaaaaa");
+            if (targetUser.getFollowers().contains(follower.getId())) {
+                return ResponseEntity.badRequest().body("Você já segue este usuário");
+            }
+
+            targetUser.getFollowers().add(follower.getId());
+            userRepository.save(targetUser);
+
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{userId}/unfollow")
+    public ResponseEntity<Object> unfollowUser(@PathVariable UUID userId, @RequestBody @Valid FollowDto followDto) {
+        try {
+            UserModel targetUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+            if (!targetUser.getFollowers().remove(followDto.followerId())) {
+                return ResponseEntity.badRequest().body("Você não seguia este usuário");
+            }
+
+            userRepository.save(targetUser);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
     
 }
